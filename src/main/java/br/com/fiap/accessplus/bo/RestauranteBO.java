@@ -1,5 +1,6 @@
 package br.com.fiap.accessplus.bo;
 
+import br.com.fiap.accessplus.exception.RestauranteNaoEncontradoException;
 import br.com.fiap.accessplus.model.entity.Restaurante;
 import br.com.fiap.accessplus.repository.RestauranteRepository;
 import org.springframework.stereotype.Service;
@@ -44,7 +45,7 @@ public class RestauranteBO {
         if (resultado.isPresent()) {
             return resultado.get();
         }
-        throw new IllegalArgumentException("Restaurante não encontrado");
+        throw new RestauranteNaoEncontradoException("Restaurante não encontrado");
     }
 
     public List<Restaurante> listarTodos(){
