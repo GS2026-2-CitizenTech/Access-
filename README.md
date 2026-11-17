@@ -45,3 +45,18 @@ Operação de manutenção (ainda sem autorização):
 As declarações são autodeclaradas, não constituem certificação técnica e podem conter o status explícito `NAO_INFORMADO`. O catálogo não possui endpoint de criação para restaurantes. A alteração de declarações precisa de autenticação/autorização antes de ser exposta publicamente; `tipoUsuario` não é autorização.
 
 O script Oracle definitivo ainda precisa definir os nomes físicos de tabelas/colunas, chaves estrangeiras, a restrição única restaurante–recurso e a estratégia de geração de IDs. Não houve teste com Oracle nesta etapa.
+
+## Avaliações de restaurantes
+
+Consultas públicas:
+
+- `GET /restaurantes/{idRestaurante}/avaliacoes` lista avaliações somente quando o restaurante estiver ativo e publicado.
+- `GET /avaliacoes/{idAvaliacao}` retorna avaliação somente quando o restaurante vinculado estiver ativo e publicado.
+
+Cadastro (ainda sem autorização):
+
+- `POST /restaurantes/{idRestaurante}/avaliacoes` recebe o identificador do usuário, nota geral, comentário opcional, data da visita opcional e notas opcionais por categoria.
+
+As notas aceitam valores de 0 a 5 em incrementos de 0,5. A nota zero é válida e a ausência de nota por categoria não equivale a zero. A avaliação é um relato de experiência, não uma certificação de acessibilidade. O ID do usuário enviado no corpo não constitui autenticação; o POST deve ser protegido por autorização quando esse mecanismo for definido. Não existem endpoints públicos para editar ou excluir avaliações nesta etapa.
+
+O script Oracle ainda precisa alinhar tabelas/colunas de avaliações, as FKs de restaurante e usuário, a constraint única avaliação–categoria e a geração de IDs. Não houve teste com Oracle.
