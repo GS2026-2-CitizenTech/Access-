@@ -6,6 +6,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -24,6 +25,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EmailJaCadastradoException.class)
     public ResponseEntity<String> tratarEmailJaCadastrado(EmailJaCadastradoException ex) {
         return ResponseEntity.status(409).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(RecursoAcessibilidadeNaoEncontradoException.class)
+    public ResponseEntity<String> tratarRecursoNaoEncontrado(RecursoAcessibilidadeNaoEncontradoException ex) {
+        return ResponseEntity.status(404).body(ex.getMessage());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -46,6 +52,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<String> tratarCorpoInvalido(HttpMessageNotReadableException ex) {
         return ResponseEntity.badRequest().body("Corpo da requisição inválido");
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<String> tratarParametroInvalido(MethodArgumentTypeMismatchException ex) {
+        return ResponseEntity.badRequest().body("Parâmetro da requisição inválido");
     }
 
 }

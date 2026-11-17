@@ -29,3 +29,19 @@ Operações administrativas (ainda sem autorização):
 - `GET /usuarios/{id}` busca um usuário para fins administrativos.
 
 O cadastro valida nome, e-mail, senha e tipo de usuário, normaliza o e-mail e impede duplicidade sem diferenciar maiúsculas de minúsculas. A senha é persistida somente como hash BCrypt e nunca é incluída nas respostas. O tipo enviado no cadastro é apenas um dado cadastral e não concede autorização. Estes endpoints precisam de autenticação e autorização antes de qualquer uso em produção.
+
+## Recursos de acessibilidade
+
+Consultas públicas:
+
+- `GET /recursos-acessibilidade` lista o catálogo predefinido; use `?categoria=FISICA`, `VISUAL`, `AUDITIVA` ou `SENSORIAL` para filtrar.
+- `GET /recursos-acessibilidade/{idRecurso}/restaurantes` lista somente restaurantes ativos e publicados que declararam `SIM` para o recurso.
+- `GET /restaurantes/{idRestaurante}/recursos-acessibilidade` lista as declarações de um restaurante ativo e publicado. Uma lista vazia significa ausência de informação.
+
+Operação de manutenção (ainda sem autorização):
+
+- `PUT /restaurantes/{idRestaurante}/recursos-acessibilidade/{idRecurso}` cria ou atualiza a declaração atual para o par restaurante–recurso.
+
+As declarações são autodeclaradas, não constituem certificação técnica e podem conter o status explícito `NAO_INFORMADO`. O catálogo não possui endpoint de criação para restaurantes. A alteração de declarações precisa de autenticação/autorização antes de ser exposta publicamente; `tipoUsuario` não é autorização.
+
+O script Oracle definitivo ainda precisa definir os nomes físicos de tabelas/colunas, chaves estrangeiras, a restrição única restaurante–recurso e a estratégia de geração de IDs. Não houve teste com Oracle nesta etapa.

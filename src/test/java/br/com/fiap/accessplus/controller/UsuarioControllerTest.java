@@ -72,7 +72,7 @@ class UsuarioControllerTest {
     void retornaBadRequestComMensagemParaCamposObrigatorios() throws Exception {
         mockMvc.perform(post("/usuarios")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{}"))
+                        .content("{\"email\":\"ana@exemplo.com\",\"senha\":\"senha-segura\",\"tipoUsuario\":\"CONSUMIDOR\"}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(containsString("Nome é obrigatório")));
     }
