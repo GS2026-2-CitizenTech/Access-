@@ -8,90 +8,90 @@ import br.com.fiap.accessplus.model.entity.Restaurante;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/restaurantes")
 public class RestauranteController {
 
-    private RestauranteBO restauranteBO;
+    private final RestauranteBO restauranteBO;
 
     public RestauranteController(RestauranteBO restauranteBO) {
         this.restauranteBO = restauranteBO;
     }
     @GetMapping
     public List<RestauranteRespostaDTO> listarTodos() {
-        List<Restaurante> restaurantes = restauranteBO.listarTodos();
-        List<RestauranteRespostaDTO> respostas = new ArrayList<>();
-
-        for (Restaurante restaurante : restaurantes) {
-            respostas.add(converterParaResposta(restaurante));
-        }
-
-        return respostas;
+        return restauranteBO.listarPublicos().stream()
+                .map(RestauranteRespostaDTO::from)
+                .toList();
     }
     @GetMapping("/{id}")
     public RestauranteRespostaDTO buscarPorId(@PathVariable Long id) {
-        Restaurante restaurante = restauranteBO.buscarPorId(id);
-        return converterParaResposta(restaurante);
+        return RestauranteRespostaDTO.from(restauranteBO.buscarPublicoPorId(id));
     }
 
 
     @PostMapping
     public ResponseEntity<RestauranteRespostaDTO> cadastrar(@RequestBody RestauranteDTO restauranteDTO) {
-        Restaurante restaurante = new Restaurante();
-
-        restaurante.setNome(restauranteDTO.getNome());
-        restaurante.setBairro(restauranteDTO.getBairro());
-        restaurante.setEndereco(restauranteDTO.getEndereco());
-        restaurante.setDescricao(restauranteDTO.getDescricao());
-
-        Restaurante restauranteCadastrado = restauranteBO.cadastrar(restaurante);
-        return ResponseEntity.status(201).body(restauranteCadastrado);
+        Restaurante restauranteCadastrado = restauranteBO.cadastrar(paraEntidade(restauranteDTO));
+        return ResponseEntity.status(201).body(RestauranteRespostaDTO.from(restauranteCadastrado));
     }
+
+    @PutMapping("/{id}")
+    public RestauranteRespostaDTO atualizarCompleto(@PathVariable Long id, @RequestBody RestauranteDTO dadosAtualizados) {
+        return RestauranteRespostaDTO.from(restauranteBO.atualizarCompleto(id, paraEntidade(dadosAtualizados)));
+    }
+
     @PatchMapping("/{id}")
-    public Restaurante atualizar(@PathVariable Long id, @RequestBody RestauranteAtualizacaoDTO dadosAtualizados) {
-        Restaurante restaurante = new Restaurante();
-
-        restaurante.setNome(dadosAtualizados.getNome());
-        restaurante.setBairro(dadosAtualizados.getBairro());
-        restaurante.setEndereco(dadosAtualizados.getEndereco());
-        restaurante.setDescricao(dadosAtualizados.getDescricao());
-
-        return restauranteBO.atualizar(id,restaurante);
+    public RestauranteRespostaDTO atualizar(@PathVariable Long id, @RequestBody RestauranteAtualizacaoDTO dadosAtualizados) {
+        return RestauranteRespostaDTO.from(restauranteBO.atualizar(id, paraEntidade(dadosAtualizados)));
     }
 
 
     @PatchMapping("/{id}/desativar")
-    public Restaurante desativar(@PathVariable Long id) {
-        return restauranteBO.desativar(id);
+    public RestauranteRespostaDTO desativar(@PathVariable Long id) {
+        return RestauranteRespostaDTO.from(restauranteBO.desativar(id));
     }
     @PatchMapping("/{id}/publicar")
-    public Restaurante publicar(@PathVariable Long id) {
-        return restauranteBO.publicar(id);
+    public RestauranteRespostaDTO publicar(@PathVariable Long id) {
+        return RestauranteRespostaDTO.from(restauranteBO.publicar(id));
     }
     @PatchMapping("/{id}/despublicar")
-    public Restaurante despublicar(@PathVariable Long id) {
-        return restauranteBO.despublicar(id);
+    public RestauranteRespostaDTO despublicar(@PathVariable Long id) {
+        return RestauranteRespostaDTO.from(restauranteBO.despublicar(id));
     }
     @PatchMapping("/{id}/reativar")
-    public Restaurante reativar(@PathVariable Long id) {
-        return restauranteBO.reativar(id);
+    public RestauranteRespostaDTO reativar(@PathVariable Long id) {
+        return RestauranteRespostaDTO.from(restauranteBO.reativar(id));
     }
 
-    private RestauranteRespostaDTO converterParaResposta(Restaurante restaurante) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> excluir(@PathVariable Long id) {
+        restauranteBO.desativar(id);
+        return ResponseEntity.noContent().build();
+    }
 
-        RestauranteRespostaDTO resposta = new RestauranteRespostaDTO();
-        resposta.setIdRestaurante(restaurante.getIdRestaurante());
-        resposta.setNome(restaurante.getNome());
-        resposta.setBairro(restaurante.getBairro());
-        resposta.setEndereco(restaurante.getEndereco());
-        resposta.setDescricao(restaurante.getDescricao());
-        resposta.setAtivo(restaurante.isAtivo());
-        resposta.setPublicado(restaurante.isPublicado());
+    private Restaurante paraEntidade(RestauranteDTO dto) {
+        if (dto == null) {
+            throw new IllegalArgumentException("Dados do restaurante não informados");
+        }
+        Restaurante restaurante = new Restaurante();
+        restaurante.setNome(dto.getNome());
+        restaurante.setBairro(dto.getBairro());
+        restaurante.setEndereco(dto.getEndereco());
+        restaurante.setDescricao(dto.getDescricao());
+        return restaurante;
+    }
 
-        return resposta;
-
+    private Restaurante paraEntidade(RestauranteAtualizacaoDTO dto) {
+        if (dto == null) {
+            throw new IllegalArgumentException("Dados para atualização não informados");
+        }
+        Restaurante restaurante = new Restaurante();
+        restaurante.setNome(dto.getNome());
+        restaurante.setBairro(dto.getBairro());
+        restaurante.setEndereco(dto.getEndereco());
+        restaurante.setDescricao(dto.getDescricao());
+        return restaurante;
     }
 }

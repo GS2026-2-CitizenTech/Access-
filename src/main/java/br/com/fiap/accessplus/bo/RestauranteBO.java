@@ -17,21 +17,7 @@ public class RestauranteBO {
     }
 
     public Restaurante cadastrar(Restaurante restaurante){
-        if (restaurante == null) {
-            throw new IllegalArgumentException("Dados do restaurante não informados");
-        }
-        if (restaurante.getNome() == null || restaurante.getNome().isBlank()) {
-            throw new IllegalArgumentException("Nome não pode estar vazio");
-        }
-        if (restaurante.getBairro() == null || restaurante.getBairro().isBlank()) {
-            throw new IllegalArgumentException("Bairro não pode estar vazio");
-        }
-        if (restaurante.getEndereco() == null || restaurante.getEndereco().isBlank()){
-            throw new IllegalArgumentException("Endereço não pode estar vazio");
-        }
-        if (restaurante.getDescricao() == null || restaurante.getDescricao().isBlank()){
-            throw new IllegalArgumentException("Descrição não pode estar vazia");
-        }
+        validarCamposObrigatorios(restaurante, "Dados do restaurante não informados");
         restaurante.setAtivo(true);
         restaurante.setPublicado(false);
         return restauranteRepository.save(restaurante);
@@ -50,6 +36,19 @@ public class RestauranteBO {
 
     public List<Restaurante> listarTodos(){
         return restauranteRepository.findAll();
+    }
+
+    public List<Restaurante> listarPublicos() {
+        return restauranteRepository.findByAtivoTrueAndPublicadoTrue();
+    }
+
+    public Restaurante buscarPublicoPorId(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Id não informado");
+        }
+
+        return restauranteRepository.findByIdRestauranteAndAtivoTrueAndPublicadoTrue(id)
+                .orElseThrow(() -> new RestauranteNaoEncontradoException("Restaurante não encontrado"));
     }
 
     public Restaurante atualizar(Long id, Restaurante dadosAtualizados) {
@@ -98,6 +97,21 @@ public class RestauranteBO {
         return restauranteRepository.save(restauranteExistente);
     }
 
+    public Restaurante atualizarCompleto(Long id, Restaurante dadosAtualizados) {
+        if (id == null) {
+            throw new IllegalArgumentException("Id não informado");
+        }
+        validarCamposObrigatorios(dadosAtualizados, "Dados para atualização não informados");
+
+        Restaurante restauranteExistente = buscarPorId(id);
+        restauranteExistente.setNome(dadosAtualizados.getNome());
+        restauranteExistente.setBairro(dadosAtualizados.getBairro());
+        restauranteExistente.setEndereco(dadosAtualizados.getEndereco());
+        restauranteExistente.setDescricao(dadosAtualizados.getDescricao());
+
+        return restauranteRepository.save(restauranteExistente);
+    }
+
     public Restaurante desativar(Long id){
         Restaurante restauranteExistente = buscarPorId(id);
         restauranteExistente.setAtivo(false);
@@ -127,5 +141,23 @@ public class RestauranteBO {
         restauranteExistente.setAtivo(true);
 
         return restauranteRepository.save(restauranteExistente);
+    }
+
+    private void validarCamposObrigatorios(Restaurante restaurante, String mensagemParaNulo) {
+        if (restaurante == null) {
+            throw new IllegalArgumentException(mensagemParaNulo);
+        }
+        if (restaurante.getNome() == null || restaurante.getNome().isBlank()) {
+            throw new IllegalArgumentException("Nome não pode estar vazio");
+        }
+        if (restaurante.getBairro() == null || restaurante.getBairro().isBlank()) {
+            throw new IllegalArgumentException("Bairro não pode estar vazio");
+        }
+        if (restaurante.getEndereco() == null || restaurante.getEndereco().isBlank()) {
+            throw new IllegalArgumentException("Endereço não pode estar vazio");
+        }
+        if (restaurante.getDescricao() == null || restaurante.getDescricao().isBlank()) {
+            throw new IllegalArgumentException("Descrição não pode estar vazia");
+        }
     }
 }

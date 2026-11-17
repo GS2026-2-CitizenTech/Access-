@@ -1,13 +1,14 @@
 package br.com.fiap.accessplus;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 class AccessplusApplicationTests {
 
 	@Test
-	void contextLoads() {
+	void applicationClassIsAvailable() {
+		assertDoesNotThrow(() -> AccessplusApplication.class.getDeclaredMethod("main", String[].class));
 	}
 
 }

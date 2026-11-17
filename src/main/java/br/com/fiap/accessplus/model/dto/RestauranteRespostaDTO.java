@@ -1,5 +1,7 @@
 package br.com.fiap.accessplus.model.dto;
 
+import br.com.fiap.accessplus.model.entity.Restaurante;
+
 public class RestauranteRespostaDTO {
     private Long idRestaurante;
     private String nome;
@@ -66,5 +68,17 @@ public class RestauranteRespostaDTO {
 
     public void setPublicado(boolean publicado) {
         this.publicado = publicado;
+    }
+
+    public static RestauranteRespostaDTO from(Restaurante restaurante) {
+        RestauranteRespostaDTO resposta = new RestauranteRespostaDTO();
+        resposta.setIdRestaurante(restaurante.getIdRestaurante());
+        resposta.setNome(restaurante.getNome());
+        resposta.setBairro(restaurante.getBairro());
+        resposta.setEndereco(restaurante.getEndereco());
+        resposta.setDescricao(restaurante.getDescricao());
+        resposta.setAtivo(restaurante.isAtivo());
+        resposta.setPublicado(restaurante.isPublicado());
+        return resposta;
     }
 }
