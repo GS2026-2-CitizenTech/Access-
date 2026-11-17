@@ -19,3 +19,13 @@ Operações de manutenção (ainda sem autorização):
 Os endpoints de manutenção não têm autenticação/autorização nesta etapa e não devem ser considerados seguros para uso público ou produção. A autorização deve protegê-los antes do deploy.
 
 Uma mudança de localização pode ser uma correção cadastral ou a transferência real de estabelecimento. A modelagem já possui `restauranteAnterior`, mas ainda não existe uma operação específica que diferencie os dois casos e preserve automaticamente o histórico. Essa decisão permanece pendente para não alterar arbitrariamente dados, vínculos futuros de avaliações ou o script Oracle nesta etapa.
+
+## API de usuários
+
+Operações administrativas (ainda sem autorização):
+
+- `POST /usuarios` cadastra usuários dos tipos `CONSUMIDOR` ou `RESTAURANTE`.
+- `GET /usuarios` lista os usuários para fins administrativos.
+- `GET /usuarios/{id}` busca um usuário para fins administrativos.
+
+O cadastro valida nome, e-mail, senha e tipo de usuário, normaliza o e-mail e impede duplicidade sem diferenciar maiúsculas de minúsculas. A senha é persistida somente como hash BCrypt e nunca é incluída nas respostas. O tipo enviado no cadastro é apenas um dado cadastral e não concede autorização. Estes endpoints precisam de autenticação e autorização antes de qualquer uso em produção.

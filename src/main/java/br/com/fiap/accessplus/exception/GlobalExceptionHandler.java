@@ -14,6 +14,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(404).body(ex.getMessage());
     }
 
+    @ExceptionHandler(UsuarioNaoEncontradoException.class)
+    public ResponseEntity<String> tratarUsuarioNaoEncontrado(UsuarioNaoEncontradoException ex) {
+        return ResponseEntity.status(404).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(EmailJaCadastradoException.class)
+    public ResponseEntity<String> tratarEmailJaCadastrado(EmailJaCadastradoException ex) {
+        return ResponseEntity.status(409).body(ex.getMessage());
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> tratarArgumentoInvalido(
             IllegalArgumentException ex) {

@@ -26,7 +26,8 @@ public class RestauranteController {
                 .toList();
     }
     @GetMapping("/{id}")
-    public RestauranteRespostaDTO buscarPorId(@PathVariable Long id) {
+    public RestauranteRespostaDTO buscarPorId(@PathVariable Long id) {git status
+        git branch
         return RestauranteRespostaDTO.from(restauranteBO.buscarPublicoPorId(id));
     }
 
