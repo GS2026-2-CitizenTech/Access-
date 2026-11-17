@@ -2,6 +2,8 @@ package br.com.fiap.accessplus.exception;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -29,6 +31,16 @@ public class GlobalExceptionHandler {
             IllegalArgumentException ex) {
 
         return ResponseEntity.status(400).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<String> tratarDadosInvalidos(MethodArgumentNotValidException ex) {
+        String mensagem = ex.getBindingResult().getFieldErrors().stream()
+                .map(FieldError::getDefaultMessage)
+                .findFirst()
+                .orElse("Dados da requisição inválidos");
+
+        return ResponseEntity.badRequest().body(mensagem);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)

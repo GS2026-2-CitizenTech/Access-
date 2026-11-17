@@ -4,6 +4,7 @@ import br.com.fiap.accessplus.bo.UsuarioBO;
 import br.com.fiap.accessplus.model.dto.UsuarioCadastroDTO;
 import br.com.fiap.accessplus.model.dto.UsuarioRespostaDTO;
 import br.com.fiap.accessplus.model.entity.Usuario;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,7 +26,7 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public ResponseEntity<UsuarioRespostaDTO> cadastrar(@RequestBody UsuarioCadastroDTO dadosCadastro) {
+    public ResponseEntity<UsuarioRespostaDTO> cadastrar(@Valid @RequestBody UsuarioCadastroDTO dadosCadastro) {
         Usuario usuarioCadastrado = usuarioBO.cadastrar(paraEntidade(dadosCadastro), dadosCadastro.getSenha());
         return ResponseEntity.status(201).body(UsuarioRespostaDTO.from(usuarioCadastrado));
     }

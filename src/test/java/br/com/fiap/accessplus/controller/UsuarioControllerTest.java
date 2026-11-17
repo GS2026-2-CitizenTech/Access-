@@ -22,6 +22,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.hamcrest.Matchers.containsString;
 
 class UsuarioControllerTest {
 
@@ -62,7 +64,17 @@ class UsuarioControllerTest {
         mockMvc.perform(post("/usuarios")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"nome\":\"Ana Silva\",\"email\":\"email-invalido\",\"senha\":\"senha-segura\",\"tipoUsuario\":\"CONSUMIDOR\"}"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(containsString("E-mail deve ser válido")));
+    }
+
+    @Test
+    void retornaBadRequestComMensagemParaCamposObrigatorios() throws Exception {
+        mockMvc.perform(post("/usuarios")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(containsString("Nome é obrigatório")));
     }
 
     @Test
