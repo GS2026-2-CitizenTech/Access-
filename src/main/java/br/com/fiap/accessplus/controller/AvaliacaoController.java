@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.ArrayList;
 
 @RestController
 public class AvaliacaoController {
@@ -58,7 +59,7 @@ public class AvaliacaoController {
         if (dto.getNotasCategorias() != null) {
             avaliacao.setNotasCategorias(dto.getNotasCategorias().stream()
                     .map(this::paraEntidade)
-                    .toList());
+                    .collect(java.util.stream.Collectors.toCollection(ArrayList::new)));
         }
         return avaliacao;
     }

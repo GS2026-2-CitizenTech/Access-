@@ -123,6 +123,21 @@ class AvaliacaoBOTest {
         assertEquals(1L, resultado.getRestaurante().getIdRestaurante());
     }
 
+    @Test
+    void mantemColecaoMutavelEVinculoBidirecionalDasCategorias() {
+        Avaliacao avaliacao = new Avaliacao();
+        AvaliacaoCategoria fisica = notaCategoria(CategoriaAcessibilidade.FISICA, "3.0");
+        AvaliacaoCategoria visual = notaCategoria(CategoriaAcessibilidade.VISUAL, "4.0");
+
+        avaliacao.setNotasCategorias(List.of(fisica));
+        avaliacao.adicionarNotaCategoria(visual);
+        avaliacao.getNotasCategorias().add(notaCategoria(CategoriaAcessibilidade.AUDITIVA, "2.0"));
+
+        assertEquals(3, avaliacao.getNotasCategorias().size());
+        assertSame(avaliacao, fisica.getAvaliacao());
+        assertSame(avaliacao, visual.getAvaliacao());
+    }
+
     private Avaliacao avaliacao(String nota) {
         Avaliacao avaliacao = new Avaliacao();
         if (nota != null) {

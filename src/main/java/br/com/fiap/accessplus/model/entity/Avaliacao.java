@@ -109,6 +109,16 @@ public class Avaliacao {
     }
 
     public void setNotasCategorias(List<AvaliacaoCategoria> notasCategorias) {
-        this.notasCategorias = notasCategorias == null ? new ArrayList<>() : notasCategorias;
+        this.notasCategorias.clear();
+        if (notasCategorias != null) {
+            notasCategorias.forEach(this::adicionarNotaCategoria);
+        }
+    }
+
+    public void adicionarNotaCategoria(AvaliacaoCategoria notaCategoria) {
+        if (notaCategoria != null) {
+            this.notasCategorias.add(notaCategoria);
+            notaCategoria.setAvaliacao(this);
+        }
     }
 }
