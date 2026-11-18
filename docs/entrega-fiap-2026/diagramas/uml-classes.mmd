@@ -1,0 +1,98 @@
+classDiagram
+direction LR
+
+class Usuario {
+  +Long idUsuario
+  +String nome
+  +String email
+  +String senhaHash
+  +TipoUsuario tipoUsuario
+  +LocalDateTime dataCadastro
+}
+class Restaurante {
+  +Long idRestaurante
+  +String nome
+  +String endereco
+  +String bairro
+  +String descricao
+  +boolean publicado
+  +boolean ativo
+  +String cidade
+  +String telefone
+  +LocalDateTime dataCadastro
+}
+class CategoriaAcessibilidadeEntity {
+  +Long idCategoria
+  +CategoriaAcessibilidade codigo
+  +String nome
+  +String descricao
+}
+class RecursoAcessibilidade {
+  +Long idRecurso
+  +String nome
+  +String descricao
+}
+class RestauranteRecurso {
+  +Long idRestauranteRecurso
+  +String descricaoAdicional
+  +StatusDeclaracao statusDeclaracao
+  +LocalDateTime dataAtualizacao
+  +boolean autodeclarado
+}
+class Avaliacao {
+  +Long idAvaliacao
+  +BigDecimal notaGeral
+  +String comentario
+  +LocalDate dataVisita
+  +LocalDateTime dataCriacao
+}
+class AvaliacaoCategoria {
+  +Long idAvaliacaoCategoria
+  +BigDecimal nota
+}
+class VerificacaoRecurso {
+  +Long idVerificacao
+  +ResultadoVerificacao resultado
+  +String comentario
+  +LocalDateTime dataVerificacao
+}
+class TipoUsuario {
+  <<enumeration>>
+  CONSUMIDOR
+  RESTAURANTE
+}
+class CategoriaAcessibilidade {
+  <<enumeration>>
+  FISICA
+  VISUAL
+  AUDITIVA
+  SENSORIAL
+}
+class StatusDeclaracao {
+  <<enumeration>>
+  SIM
+  NAO
+  NAO_INFORMADO
+}
+class ResultadoVerificacao {
+  <<enumeration>>
+  CONFIRMADO
+  CONTESTADO
+  NAO_VERIFICADO
+}
+
+Usuario "1" <-- "0..*" Restaurante : responsavel
+Restaurante "0..1" <-- "0..*" Restaurante : anterior
+CategoriaAcessibilidadeEntity "1" <-- "0..*" RecursoAcessibilidade : categoria
+Restaurante "1" <-- "0..*" RestauranteRecurso : restaurante
+RecursoAcessibilidade "1" <-- "0..*" RestauranteRecurso : recurso
+Usuario "1" <-- "0..*" Avaliacao : usuario
+Restaurante "1" <-- "0..*" Avaliacao : restaurante
+Avaliacao "1" *-- "0..4" AvaliacaoCategoria : notasCategorias
+CategoriaAcessibilidadeEntity "1" <-- "0..*" AvaliacaoCategoria : categoria
+Avaliacao "1" <-- "0..*" VerificacaoRecurso : avaliacao
+RestauranteRecurso "1" <-- "0..*" VerificacaoRecurso : declaracao
+Usuario --> TipoUsuario
+CategoriaAcessibilidadeEntity --> CategoriaAcessibilidade
+RestauranteRecurso --> StatusDeclaracao
+VerificacaoRecurso --> ResultadoVerificacao

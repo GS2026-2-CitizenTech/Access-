@@ -1,0 +1,79 @@
+erDiagram
+  USUARIO {
+    NUMBER id_usuario PK
+    VARCHAR2 nome
+    VARCHAR2 email UK
+    VARCHAR2 senha
+    VARCHAR2 tipo_usuario
+    TIMESTAMP data_cadastro
+  }
+  CATEGORIA_ACESSIBILIDADE {
+    NUMBER id_categoria PK
+    VARCHAR2 codigo UK
+    VARCHAR2 nome
+    VARCHAR2 descricao
+  }
+  RECURSO_ACESSIBILIDADE {
+    NUMBER id_recurso PK
+    VARCHAR2 nome
+    VARCHAR2 descricao
+    NUMBER categoria_id FK
+  }
+  RESTAURANTE {
+    NUMBER id_restaurante PK
+    VARCHAR2 nome
+    VARCHAR2 descricao
+    VARCHAR2 endereco
+    VARCHAR2 bairro
+    VARCHAR2 cidade
+    VARCHAR2 telefone
+    TIMESTAMP data_cadastro
+    NUMBER ativo
+    NUMBER publicado
+    NUMBER restaurante_anterior_id FK
+    NUMBER usuario_id FK
+  }
+  RESTAURANTE_RECURSO {
+    NUMBER id_restaurante_recurso PK
+    VARCHAR2 descricao_adicional
+    VARCHAR2 status_declaracao
+    TIMESTAMP data_atualizacao
+    NUMBER autodeclarado
+    NUMBER restaurante_id FK
+    NUMBER recurso_id FK
+  }
+  AVALIACAO {
+    NUMBER id_avaliacao PK
+    NUMBER nota
+    VARCHAR2 comentario
+    TIMESTAMP data_avaliacao
+    DATE data_visita
+    NUMBER usuario_id FK
+    NUMBER restaurante_id FK
+  }
+  AVALIACAO_CATEGORIA {
+    NUMBER id_avaliacao_categoria PK
+    NUMBER avaliacao_id FK
+    NUMBER categoria_id FK
+    NUMBER nota
+  }
+  VERIFICACAO_RECURSO {
+    NUMBER id_verificacao PK
+    VARCHAR2 resultado
+    VARCHAR2 comentario
+    TIMESTAMP data_verificacao
+    NUMBER avaliacao_id FK
+    NUMBER restaurante_recurso_id FK
+  }
+
+  USUARIO ||--o{ RESTAURANTE : responsavel
+  RESTAURANTE o|--o{ RESTAURANTE : anterior
+  CATEGORIA_ACESSIBILIDADE ||--o{ RECURSO_ACESSIBILIDADE : classifica
+  RESTAURANTE ||--o{ RESTAURANTE_RECURSO : declara
+  RECURSO_ACESSIBILIDADE ||--o{ RESTAURANTE_RECURSO : declarado
+  USUARIO ||--o{ AVALIACAO : registra
+  RESTAURANTE ||--o{ AVALIACAO : recebe
+  AVALIACAO ||--o{ AVALIACAO_CATEGORIA : detalha
+  CATEGORIA_ACESSIBILIDADE ||--o{ AVALIACAO_CATEGORIA : recebe_nota
+  AVALIACAO ||--o{ VERIFICACAO_RECURSO : possui
+  RESTAURANTE_RECURSO ||--o{ VERIFICACAO_RECURSO : referencia

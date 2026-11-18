@@ -1,0 +1,23 @@
+flowchart LR
+  mvc[PaginaController MVC] --> form[FormularioAvaliacaoBO]
+  rest[Controllers REST] --> bo[BOs]
+  form --> bo
+  bo --> repo[Repositories Spring Data JPA]
+  repo --> entity[Entidades JPA]
+  entity --> oracle[(Oracle)]
+  rest --> dto[DTOs]
+  mvc --> thymeleaf[Templates Thymeleaf]
+  rest --> handler[GlobalExceptionHandler]
+
+  subgraph Controllers
+    rest
+    mvc
+  end
+  subgraph Business
+    bo
+    form
+  end
+  subgraph Persistence
+    repo
+    entity
+  end
