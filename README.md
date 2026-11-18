@@ -60,3 +60,16 @@ Cadastro (ainda sem autorização):
 As notas aceitam valores de 0 a 5 em incrementos de 0,5. A nota zero é válida e a ausência de nota por categoria não equivale a zero. A avaliação é um relato de experiência, não uma certificação de acessibilidade. O ID do usuário enviado no corpo não constitui autenticação; o POST deve ser protegido por autorização quando esse mecanismo for definido. Não existem endpoints públicos para editar ou excluir avaliações nesta etapa.
 
 O script Oracle ainda precisa alinhar tabelas/colunas de avaliações, as FKs de restaurante e usuário, a constraint única avaliação–categoria e a geração de IDs. Não houve teste com Oracle.
+
+## Verificações comunitárias de acessibilidade
+
+Consultas públicas:
+
+- `GET /avaliacoes/{idAvaliacao}/verificacoes` lista as verificações de uma avaliação somente quando o restaurante estiver ativo e publicado.
+- `GET /verificacoes/{idVerificacao}` retorna uma verificação somente quando o restaurante da avaliação estiver ativo e publicado.
+
+Cadastro (ainda sem autorização):
+
+- `POST /avaliacoes/{idAvaliacao}/verificacoes` recebe a declaração de recurso, o resultado (`CONFIRMADO`, `CONTESTADO` ou `NAO_VERIFICADO`) e um comentário opcional.
+
+Uma verificação é um relato comunitário associado a uma avaliação e a uma declaração existente do mesmo restaurante. Ela não altera a declaração original, as notas da avaliação nem representa certificação técnica. Há no máximo uma verificação para cada combinação avaliação–declaração. O POST deve receber autenticação/autorização antes de uso público.

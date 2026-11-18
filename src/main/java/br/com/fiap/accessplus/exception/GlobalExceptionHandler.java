@@ -37,6 +37,21 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(404).body(ex.getMessage());
     }
 
+    @ExceptionHandler(VerificacaoRecursoNaoEncontradaException.class)
+    public ResponseEntity<String> tratarVerificacaoNaoEncontrada(VerificacaoRecursoNaoEncontradaException ex) {
+        return ResponseEntity.status(404).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(DeclaracaoRecursoNaoEncontradaException.class)
+    public ResponseEntity<String> tratarDeclaracaoNaoEncontrada(DeclaracaoRecursoNaoEncontradaException ex) {
+        return ResponseEntity.status(404).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(VerificacaoRecursoDuplicadaException.class)
+    public ResponseEntity<String> tratarVerificacaoDuplicada(VerificacaoRecursoDuplicadaException ex) {
+        return ResponseEntity.status(409).body(ex.getMessage());
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> tratarArgumentoInvalido(
             IllegalArgumentException ex) {
