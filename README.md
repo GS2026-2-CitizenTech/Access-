@@ -1,75 +1,116 @@
 # Access+
 
-## API de restaurantes
+Backend do Access+, projeto acadêmico da Global Solution FIAP 2026. A aplicação ajuda consumidores a localizar restaurantes e consultar informações autodeclaradas de acessibilidade, avaliações de experiência e verificações comunitárias.
 
-Consultas públicas:
+## Módulos
 
-- `GET /restaurantes` lista somente restaurantes ativos e publicados.
-- `GET /restaurantes/{id}` retorna somente um restaurante ativo e publicado.
+1. **Usuários** — cadastro de consumidores e responsáveis por restaurantes, com senha armazenada em hash BCrypt.
+2. **Restaurantes** — cadastro, atualização, publicação, ativação e exclusão lógica.
+3. **Recursos de acessibilidade** — catálogo de recursos, declarações autodeclaradas e filtros públicos por recurso declarado como `SIM`.
+4. **Avaliações** — nota geral e notas opcionais por categoria de acessibilidade.
+5. **Verificações comunitárias** — relatos associados a uma avaliação e a uma declaração de recurso do mesmo restaurante.
 
-Operações de manutenção (ainda sem autorização):
+Uma declaração ou verificação comunitária não é certificação técnica de acessibilidade.
 
-- `POST /restaurantes` cadastra um restaurante ativo e não publicado.
-- `PUT /restaurantes/{id}` atualiza integralmente nome, bairro, endereço e descrição.
-- `PATCH /restaurantes/{id}` atualiza somente os campos enviados.
-- `PATCH /restaurantes/{id}/desativar` e `PATCH /restaurantes/{id}/reativar` alteram a ativação.
-- `PATCH /restaurantes/{id}/publicar` e `PATCH /restaurantes/{id}/despublicar` alteram a publicação.
-- `DELETE /restaurantes/{id}` realiza exclusão lógica ao desativar o registro; não há exclusão física.
+## Tecnologias
 
-Os endpoints de manutenção não têm autenticação/autorização nesta etapa e não devem ser considerados seguros para uso público ou produção. A autorização deve protegê-los antes do deploy.
+- Java 21
+- Spring Boot, Spring Web MVC, Spring Data JPA e Hibernate
+- Bean Validation
+- Oracle Database 19c com driver `ojdbc11`
+- Maven Wrapper
+- JUnit 5, Mockito e MockMvc
 
-Uma mudança de localização pode ser uma correção cadastral ou a transferência real de estabelecimento. A modelagem já possui `restauranteAnterior`, mas ainda não existe uma operação específica que diferencie os dois casos e preserve automaticamente o histórico. Essa decisão permanece pendente para não alterar arbitrariamente dados, vínculos futuros de avaliações ou o script Oracle nesta etapa.
+## Organização do código
 
-## API de usuários
+O projeto segue a organização estudada na FIAP:
 
-Operações administrativas (ainda sem autorização):
+```text
+Controller -> BO -> Repository -> Entity
+                    DTOs nas fronteiras HTTP
+```
 
-- `POST /usuarios` cadastra usuários dos tipos `CONSUMIDOR` ou `RESTAURANTE`.
-- `GET /usuarios` lista os usuários para fins administrativos.
-- `GET /usuarios/{id}` busca um usuário para fins administrativos.
+- `controller`: endpoints REST e conversão entre DTOs e entidades.
+- `bo`: regras de negócio e validações complementares.
+- `repository`: persistência com Spring Data JPA.
+- `model/entity`: mapeamentos JPA para o schema Oracle.
+- `model/dto`: contratos de entrada e resposta.
+- `exception`: erros de domínio e tratamento HTTP centralizado.
 
-O cadastro valida nome, e-mail, senha e tipo de usuário, normaliza o e-mail e impede duplicidade sem diferenciar maiúsculas de minúsculas. A senha é persistida somente como hash BCrypt e nunca é incluída nas respostas. O tipo enviado no cadastro é apenas um dado cadastral e não concede autorização. Estes endpoints precisam de autenticação e autorização antes de qualquer uso em produção.
+## Pré-requisitos
 
-## Recursos de acessibilidade
+- JDK 21 configurado no `PATH`.
+- Oracle Database 19c com o schema Access+ já criado.
+- Acesso ao repositório Database: [accessplus-database](https://github.com/hvicente21/accessplus-database).
 
-Consultas públicas:
+O Maven Wrapper está incluído; não é necessário instalar Maven globalmente.
 
-- `GET /recursos-acessibilidade` lista o catálogo predefinido; use `?categoria=FISICA`, `VISUAL`, `AUDITIVA` ou `SENSORIAL` para filtrar.
-- `GET /recursos-acessibilidade/{idRecurso}/restaurantes` lista somente restaurantes ativos e publicados que declararam `SIM` para o recurso.
-- `GET /restaurantes/{idRestaurante}/recursos-acessibilidade` lista as declarações de um restaurante ativo e publicado. Uma lista vazia significa ausência de informação.
+## Configuração Oracle
 
-Operação de manutenção (ainda sem autorização):
+Defina as variáveis de ambiente antes de iniciar a aplicação. Use os mesmos dados de conexão validados no SQL Developer, sem gravar credenciais no repositório.
 
-- `PUT /restaurantes/{idRestaurante}/recursos-acessibilidade/{idRecurso}` cria ou atualiza a declaração atual para o par restaurante–recurso.
+```powershell
+$env:ORACLE_DB_URL = "jdbc:oracle:thin:@//<host>:<porta>/<service-name>"
+$env:ORACLE_DB_USERNAME = "<usuario-do-schema>"
+$env:ORACLE_DB_PASSWORD = "<senha-do-schema>"
+```
 
-As declarações são autodeclaradas, não constituem certificação técnica e podem conter o status explícito `NAO_INFORMADO`. O catálogo não possui endpoint de criação para restaurantes. A alteração de declarações precisa de autenticação/autorização antes de ser exposta publicamente; `tipoUsuario` não é autorização.
+A aplicação lê somente essas variáveis. A configuração JPA usa `spring.jpa.hibernate.ddl-auto=validate`: ela valida o schema existente e não cria nem altera tabelas automaticamente.
 
-O script Oracle definitivo ainda precisa definir os nomes físicos de tabelas/colunas, chaves estrangeiras, a restrição única restaurante–recurso e a estratégia de geração de IDs. Não houve teste com Oracle nesta etapa.
+## Execução
 
-## Avaliações de restaurantes
+No diretório do backend, execute:
 
-Consultas públicas:
+```powershell
+.\mvnw.cmd spring-boot:run
+```
 
-- `GET /restaurantes/{idRestaurante}/avaliacoes` lista avaliações somente quando o restaurante estiver ativo e publicado.
-- `GET /avaliacoes/{idAvaliacao}` retorna avaliação somente quando o restaurante vinculado estiver ativo e publicado.
+Sem as variáveis Oracle, a inicialização completa depende de uma configuração de conexão válida.
 
-Cadastro (ainda sem autorização):
+## Testes automatizados
 
-- `POST /restaurantes/{idRestaurante}/avaliacoes` recebe o identificador do usuário, nota geral, comentário opcional, data da visita opcional e notas opcionais por categoria.
+```powershell
+.\mvnw.cmd clean test
+```
 
-As notas aceitam valores de 0 a 5 em incrementos de 0,5. A nota zero é válida e a ausência de nota por categoria não equivale a zero. A avaliação é um relato de experiência, não uma certificação de acessibilidade. O ID do usuário enviado no corpo não constitui autenticação; o POST deve ser protegido por autorização quando esse mecanismo for definido. Não existem endpoints públicos para editar ou excluir avaliações nesta etapa.
+Última execução local: **65 testes, 0 falhas, 0 erros e 0 ignorados**. Esses testes usam JUnit, Mockito e MockMvc; não substituem testes de integração com Oracle real.
 
-O script Oracle ainda precisa alinhar tabelas/colunas de avaliações, as FKs de restaurante e usuário, a constraint única avaliação–categoria e a geração de IDs. Não houve teste com Oracle.
+## Principais endpoints REST
 
-## Verificações comunitárias de acessibilidade
+| Área | Endpoints |
+|---|---|
+| Restaurantes | `GET /restaurantes`, `GET /restaurantes/{id}`, `POST /restaurantes`, `PUT/PATCH /restaurantes/{id}`, `PATCH` de ativação/publicação e `DELETE /restaurantes/{id}` (lógico) |
+| Usuários | `POST /usuarios`, `GET /usuarios`, `GET /usuarios/{id}` |
+| Recursos | `GET /recursos-acessibilidade`, `GET /recursos-acessibilidade?categoria=FISICA`, `GET /recursos-acessibilidade/{id}/restaurantes` |
+| Declarações | `GET /restaurantes/{id}/recursos-acessibilidade`, `PUT /restaurantes/{id}/recursos-acessibilidade/{idRecurso}` |
+| Avaliações | `POST /restaurantes/{id}/avaliacoes`, `GET /restaurantes/{id}/avaliacoes`, `GET /avaliacoes/{id}` |
+| Verificações | `POST /avaliacoes/{id}/verificacoes`, `GET /avaliacoes/{id}/verificacoes`, `GET /verificacoes/{id}` |
 
-Consultas públicas:
+Consultas públicas retornam somente restaurantes ativos e publicados. As notas aceitam valores de `0` a `5` em incrementos de `0,5`. As categorias são `FISICA`, `VISUAL`, `AUDITIVA` e `SENSORIAL`; os estados de declaração são `SIM`, `NAO` e `NAO_INFORMADO`; os resultados comunitários são `CONFIRMADO`, `CONTESTADO` e `NAO_VERIFICADO`.
 
-- `GET /avaliacoes/{idAvaliacao}/verificacoes` lista as verificações de uma avaliação somente quando o restaurante estiver ativo e publicado.
-- `GET /verificacoes/{idVerificacao}` retorna uma verificação somente quando o restaurante da avaliação estiver ativo e publicado.
+## Banco de dados
 
-Cadastro (ainda sem autorização):
+O DDL, DML e DQL pertencem ao repositório Database. Em um schema novo, execute os scripts nesta ordem:
 
-- `POST /avaliacoes/{idAvaliacao}/verificacoes` recebe a declaração de recurso, o resultado (`CONFIRMADO`, `CONTESTADO` ou `NAO_VERIFICADO`) e um comentário opcional.
+1. `Access_Plus.sql` — cria a estrutura e sequences.
+2. `Access_Plus_DML.sql` — insere dados fictícios de demonstração.
+3. `Access_Plus_DQL.sql` — consultas acadêmicas independentes.
 
-Uma verificação é um relato comunitário associado a uma avaliação e a uma declaração existente do mesmo restaurante. Ela não altera a declaração original, as notas da avaliação nem representa certificação técnica. Há no máximo uma verificação para cada combinação avaliação–declaração. O POST deve receber autenticação/autorização antes de uso público.
+O DQL é independente do backend Java: ele pode ser executado no SQL Developer depois que o schema e os dados de demonstração estiverem disponíveis. A aplicação Java não executa esses scripts.
+
+As entidades usam tabelas, colunas, FKs e sequences Oracle explícitas, incluindo `SEQ_USUARIO`, `SEQ_RESTAURANTE`, `SEQ_RECURSO_ACESSIBILIDADE`, `SEQ_RESTAURANTE_RECURSO`, `SEQ_AVALIACAO`, `SEQ_AVALIACAO_CATEGORIA` e `SEQ_VERIFICACAO_RECURSO`.
+
+## Evidências de integração Oracle
+
+Durante integração supervisionada no Oracle 19c da FIAP, foram validadas leituras de restaurantes, recursos e avaliações, além de cadastros fictícios de usuário, restaurante, declaração, avaliação e verificação comunitária. Os identificadores fictícios `100` foram usados nas gravações de integração. As evidências e suas limitações estão em [docs/EVIDENCIAS_INTEGRACAO_ORACLE.md](docs/EVIDENCIAS_INTEGRACAO_ORACLE.md).
+
+## Limitações conhecidas do MVP
+
+- Não há autenticação nem autorização. Endpoints de escrita e consultas administrativas de usuários não são seguros para exposição pública.
+- O identificador de usuário recebido no cadastro de avaliação não comprova identidade ou permissão.
+- Não há edição ou exclusão pública de avaliações e verificações.
+- Verificações comunitárias são relatos e não alteram automaticamente a declaração do restaurante.
+- Uma operação específica para transferência real de estabelecimento e histórico de localização ainda depende de definição da equipe.
+- Os testes automatizados não cobrem todos os cenários possíveis de Oracle; as evidências reais registradas não representam validação para produção.
+
+Não inclua credenciais em `application.properties`, arquivos de teste, documentação ou commits.
