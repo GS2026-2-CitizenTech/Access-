@@ -47,7 +47,7 @@ public class RecursoAcessibilidadeRespostaDTO {
         resposta.setIdRecurso(recurso.getIdRecurso());
         resposta.setNome(recurso.getNome());
         resposta.setDescricao(recurso.getDescricao());
-        resposta.setCategoria(recurso.getCategoria());
+        resposta.setCategoria(recurso.getCategoria().getCodigo());
         return resposta;
     }
 }

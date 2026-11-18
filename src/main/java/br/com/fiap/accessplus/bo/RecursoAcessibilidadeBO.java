@@ -5,6 +5,7 @@ import br.com.fiap.accessplus.model.entity.CategoriaAcessibilidade;
 import br.com.fiap.accessplus.model.entity.RecursoAcessibilidade;
 import br.com.fiap.accessplus.repository.RecursoAcessibilidadeRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -12,9 +13,15 @@ import java.util.List;
 public class RecursoAcessibilidadeBO {
 
     private final RecursoAcessibilidadeRepository recursoRepository;
+    private final CategoriaAcessibilidadeBO categoriaBO;
 
-    public RecursoAcessibilidadeBO(RecursoAcessibilidadeRepository recursoRepository) {
+    @Autowired
+    public RecursoAcessibilidadeBO(RecursoAcessibilidadeRepository recursoRepository, CategoriaAcessibilidadeBO categoriaBO) {
         this.recursoRepository = recursoRepository;
+        this.categoriaBO = categoriaBO;
+    }
+    public RecursoAcessibilidadeBO(RecursoAcessibilidadeRepository recursoRepository) {
+        this(recursoRepository, null);
     }
 
     public List<RecursoAcessibilidade> listarTodos() {
@@ -25,7 +32,8 @@ public class RecursoAcessibilidadeBO {
         if (categoria == null) {
             throw new IllegalArgumentException("Categoria de acessibilidade inválida");
         }
-        return recursoRepository.findByCategoria(categoria);
+        if (categoriaBO == null) return recursoRepository.findByCategoria(categoria);
+        return recursoRepository.findByCategoria(categoriaBO.buscarPorCodigo(categoria));
     }
 
     public RecursoAcessibilidade buscarPorId(Long id) {

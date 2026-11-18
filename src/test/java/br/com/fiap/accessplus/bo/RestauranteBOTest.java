@@ -1,7 +1,10 @@
 package br.com.fiap.accessplus.bo;
 
 import br.com.fiap.accessplus.exception.RestauranteNaoEncontradoException;
+import br.com.fiap.accessplus.exception.UsuarioNaoEncontradoException;
 import br.com.fiap.accessplus.model.entity.Restaurante;
+import br.com.fiap.accessplus.model.entity.TipoUsuario;
+import br.com.fiap.accessplus.model.entity.Usuario;
 import br.com.fiap.accessplus.repository.RestauranteRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,17 +24,21 @@ class RestauranteBOTest {
 
     private RestauranteRepository repository;
     private RestauranteBO restauranteBO;
+    private UsuarioBO usuarioBO;
 
     @BeforeEach
     void setup() {
         repository = mock(RestauranteRepository.class);
-        restauranteBO = new RestauranteBO(repository);
+        usuarioBO = mock(UsuarioBO.class);
+        restauranteBO = new RestauranteBO(repository, usuarioBO);
         when(repository.save(any(Restaurante.class))).thenAnswer(invocation -> invocation.getArgument(0));
     }
 
     @Test
     void cadastraRestauranteAtivoENaoPublicado() {
-        Restaurante resultado = restauranteBO.cadastrar(novoRestaurante());
+        Usuario responsavel = new Usuario(); responsavel.setTipoUsuario(TipoUsuario.RESTAURANTE);
+        when(usuarioBO.buscarPorId(10L)).thenReturn(responsavel);
+        Restaurante resultado = restauranteBO.cadastrar(novoRestaurante(), 10L);
 
         assertTrue(resultado.isAtivo());
         assertFalse(resultado.isPublicado());
@@ -43,9 +50,22 @@ class RestauranteBOTest {
         restaurante.setNome(" ");
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> restauranteBO.cadastrar(restaurante));
+                () -> restauranteBO.cadastrar(restaurante, 10L));
 
         assertEquals("Nome não pode estar vazio", ex.getMessage());
+    }
+
+    @Test
+    void exigeResponsavelExistenteEDoTipoRestaurante() {
+        assertThrows(IllegalArgumentException.class, () -> restauranteBO.cadastrar(novoRestaurante(), null));
+
+        when(usuarioBO.buscarPorId(11L)).thenThrow(new UsuarioNaoEncontradoException("Usuário não encontrado"));
+        assertThrows(UsuarioNaoEncontradoException.class, () -> restauranteBO.cadastrar(novoRestaurante(), 11L));
+
+        Usuario consumidor = new Usuario();
+        consumidor.setTipoUsuario(TipoUsuario.CONSUMIDOR);
+        when(usuarioBO.buscarPorId(12L)).thenReturn(consumidor);
+        assertThrows(IllegalArgumentException.class, () -> restauranteBO.cadastrar(novoRestaurante(), 12L));
     }
 
     @Test

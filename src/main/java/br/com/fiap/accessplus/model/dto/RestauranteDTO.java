@@ -6,6 +6,9 @@ public class RestauranteDTO {
     private String bairro;
     private String endereco;
     private String descricao;
+    private String cidade;
+    private String telefone;
+    private Long idResponsavel;
 
     public RestauranteDTO() {
     }
@@ -48,4 +51,10 @@ public class RestauranteDTO {
     public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
+    public String getCidade() { return cidade; }
+    public void setCidade(String cidade) { this.cidade = cidade; }
+    public String getTelefone() { return telefone; }
+    public void setTelefone(String telefone) { this.telefone = telefone; }
+    public Long getIdResponsavel() { return idResponsavel; }
+    public void setIdResponsavel(Long idResponsavel) { this.idResponsavel = idResponsavel; }
 }

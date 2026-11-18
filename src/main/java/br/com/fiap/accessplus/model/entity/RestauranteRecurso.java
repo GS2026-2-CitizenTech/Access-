@@ -10,18 +10,24 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"restaurante_id", "recurso_id"}))
+@Table(name = "RESTAURANTE_RECURSO", uniqueConstraints = @UniqueConstraint(columnNames = {"restaurante_id", "recurso_id"}))
 public class RestauranteRecurso {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_restaurante_recurso")
+    @SequenceGenerator(name = "seq_restaurante_recurso", sequenceName = "SEQ_RESTAURANTE_RECURSO", allocationSize = 1)
+    @Column(name = "id_restaurante_recurso")
     private Long idRestauranteRecurso;
+
+    @Column(name = "descricao_adicional")
+    private String descricaoAdicional;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurante_id", nullable = false)
@@ -32,13 +38,13 @@ public class RestauranteRecurso {
     private RecursoAcessibilidade recurso;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "status_declaracao", nullable = false)
     private StatusDeclaracao statusDeclaracao;
 
-    @Column(nullable = false)
+    @Column(name = "data_atualizacao", nullable = false)
     private LocalDateTime dataAtualizacao;
 
-    @Column(nullable = false)
+    @Column(name = "autodeclarado", nullable = false, columnDefinition = "NUMBER(1)")
     private boolean autodeclarado;
 
     public RestauranteRecurso() {
@@ -51,6 +57,9 @@ public class RestauranteRecurso {
     public void setIdRestauranteRecurso(Long idRestauranteRecurso) {
         this.idRestauranteRecurso = idRestauranteRecurso;
     }
+
+    public String getDescricaoAdicional() { return descricaoAdicional; }
+    public void setDescricaoAdicional(String descricaoAdicional) { this.descricaoAdicional = descricaoAdicional; }
 
     public Restaurante getRestaurante() {
         return restaurante;

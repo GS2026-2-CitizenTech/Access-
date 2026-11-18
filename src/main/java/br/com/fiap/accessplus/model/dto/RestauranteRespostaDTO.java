@@ -10,6 +10,9 @@ public class RestauranteRespostaDTO {
     private String descricao;
     private boolean ativo;
     private boolean publicado;
+    private String cidade;
+    private String telefone;
+    private Long idResponsavel;
 
     public RestauranteRespostaDTO() {
     }
@@ -69,6 +72,12 @@ public class RestauranteRespostaDTO {
     public void setPublicado(boolean publicado) {
         this.publicado = publicado;
     }
+    public String getCidade() { return cidade; }
+    public void setCidade(String cidade) { this.cidade = cidade; }
+    public String getTelefone() { return telefone; }
+    public void setTelefone(String telefone) { this.telefone = telefone; }
+    public Long getIdResponsavel() { return idResponsavel; }
+    public void setIdResponsavel(Long idResponsavel) { this.idResponsavel = idResponsavel; }
 
     public static RestauranteRespostaDTO from(Restaurante restaurante) {
         RestauranteRespostaDTO resposta = new RestauranteRespostaDTO();
@@ -79,6 +88,9 @@ public class RestauranteRespostaDTO {
         resposta.setDescricao(restaurante.getDescricao());
         resposta.setAtivo(restaurante.isAtivo());
         resposta.setPublicado(restaurante.isPublicado());
+        resposta.setCidade(restaurante.getCidade());
+        resposta.setTelefone(restaurante.getTelefone());
+        resposta.setIdResponsavel(restaurante.getResponsavel() == null ? null : restaurante.getResponsavel().getIdUsuario());
         return resposta;
     }
 }

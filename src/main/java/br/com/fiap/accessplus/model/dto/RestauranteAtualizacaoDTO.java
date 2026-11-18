@@ -6,6 +6,8 @@ public class RestauranteAtualizacaoDTO {
     private String bairro;
     private String endereco;
     private String descricao;
+    private String cidade;
+    private String telefone;
 
     public RestauranteAtualizacaoDTO() {
     }
@@ -41,4 +43,8 @@ public class RestauranteAtualizacaoDTO {
     public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
+    public String getCidade() { return cidade; }
+    public void setCidade(String cidade) { this.cidade = cidade; }
+    public String getTelefone() { return telefone; }
+    public void setTelefone(String telefone) { this.telefone = telefone; }
 }

@@ -28,7 +28,7 @@ public class AvaliacaoCategoriaRespostaDTO {
 
     public static AvaliacaoCategoriaRespostaDTO from(AvaliacaoCategoria avaliacaoCategoria) {
         AvaliacaoCategoriaRespostaDTO resposta = new AvaliacaoCategoriaRespostaDTO();
-        resposta.setCategoria(avaliacaoCategoria.getCategoria());
+        resposta.setCategoria(avaliacaoCategoria.getCategoria().getCodigo());
         resposta.setNota(avaliacaoCategoria.getNota());
         return resposta;
     }

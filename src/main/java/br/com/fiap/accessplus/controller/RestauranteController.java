@@ -33,7 +33,7 @@ public class RestauranteController {
 
     @PostMapping
     public ResponseEntity<RestauranteRespostaDTO> cadastrar(@RequestBody RestauranteDTO restauranteDTO) {
-        Restaurante restauranteCadastrado = restauranteBO.cadastrar(paraEntidade(restauranteDTO));
+        Restaurante restauranteCadastrado = restauranteBO.cadastrar(paraEntidade(restauranteDTO), restauranteDTO.getIdResponsavel());
         return ResponseEntity.status(201).body(RestauranteRespostaDTO.from(restauranteCadastrado));
     }
 
@@ -80,6 +80,8 @@ public class RestauranteController {
         restaurante.setBairro(dto.getBairro());
         restaurante.setEndereco(dto.getEndereco());
         restaurante.setDescricao(dto.getDescricao());
+        restaurante.setCidade(dto.getCidade());
+        restaurante.setTelefone(dto.getTelefone());
         return restaurante;
     }
 
@@ -92,6 +94,8 @@ public class RestauranteController {
         restaurante.setBairro(dto.getBairro());
         restaurante.setEndereco(dto.getEndereco());
         restaurante.setDescricao(dto.getDescricao());
+        restaurante.setCidade(dto.getCidade());
+        restaurante.setTelefone(dto.getTelefone());
         return restaurante;
     }
 }

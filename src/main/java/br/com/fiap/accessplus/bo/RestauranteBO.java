@@ -2,22 +2,38 @@ package br.com.fiap.accessplus.bo;
 
 import br.com.fiap.accessplus.exception.RestauranteNaoEncontradoException;
 import br.com.fiap.accessplus.model.entity.Restaurante;
+import br.com.fiap.accessplus.model.entity.TipoUsuario;
+import br.com.fiap.accessplus.model.entity.Usuario;
 import br.com.fiap.accessplus.repository.RestauranteRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalDateTime;
 
 @Service
 public class RestauranteBO {
     private RestauranteRepository restauranteRepository;
+    private UsuarioBO usuarioBO;
 
-    public RestauranteBO(RestauranteRepository restauranteRepository) {
+    @Autowired
+    public RestauranteBO(RestauranteRepository restauranteRepository, UsuarioBO usuarioBO) {
         this.restauranteRepository = restauranteRepository;
+        this.usuarioBO = usuarioBO;
     }
+    public RestauranteBO(RestauranteRepository restauranteRepository) { this(restauranteRepository, null); }
 
-    public Restaurante cadastrar(Restaurante restaurante){
+    public Restaurante cadastrar(Restaurante restaurante, Long idResponsavel){
         validarCamposObrigatorios(restaurante, "Dados do restaurante não informados");
+        if (idResponsavel == null) throw new IllegalArgumentException("Responsável do restaurante não informado");
+        if (usuarioBO == null) throw new IllegalArgumentException("Responsável do restaurante não informado");
+        Usuario responsavel = usuarioBO.buscarPorId(idResponsavel);
+        if (responsavel.getTipoUsuario() != TipoUsuario.RESTAURANTE) {
+            throw new IllegalArgumentException("Responsável deve ser um usuário do tipo RESTAURANTE");
+        }
+        restaurante.setResponsavel(responsavel);
+        restaurante.setDataCadastro(LocalDateTime.now());
         restaurante.setAtivo(true);
         restaurante.setPublicado(false);
         return restauranteRepository.save(restaurante);
@@ -93,6 +109,8 @@ public class RestauranteBO {
         if (dadosAtualizados.getDescricao() != null) {
             restauranteExistente.setDescricao(dadosAtualizados.getDescricao());
         }
+        if (dadosAtualizados.getCidade() != null) restauranteExistente.setCidade(dadosAtualizados.getCidade());
+        if (dadosAtualizados.getTelefone() != null) restauranteExistente.setTelefone(dadosAtualizados.getTelefone());
 
         return restauranteRepository.save(restauranteExistente);
     }
@@ -108,6 +126,8 @@ public class RestauranteBO {
         restauranteExistente.setBairro(dadosAtualizados.getBairro());
         restauranteExistente.setEndereco(dadosAtualizados.getEndereco());
         restauranteExistente.setDescricao(dadosAtualizados.getDescricao());
+        restauranteExistente.setCidade(dadosAtualizados.getCidade());
+        restauranteExistente.setTelefone(dadosAtualizados.getTelefone());
 
         return restauranteRepository.save(restauranteExistente);
     }

@@ -1,15 +1,6 @@
 package br.com.fiap.accessplus.model.entity;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,10 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "AVALIACAO")
 public class Avaliacao {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_avaliacao")
+    @SequenceGenerator(name = "seq_avaliacao", sequenceName = "SEQ_AVALIACAO", allocationSize = 1)
+    @Column(name = "id_avaliacao")
     private Long idAvaliacao;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,14 +26,14 @@ public class Avaliacao {
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    @Column(nullable = false, precision = 2, scale = 1)
+    @Column(name = "nota", nullable = false, precision = 2, scale = 1)
     private BigDecimal notaGeral;
 
-    private String comentario;
+    @Column(name = "comentario") private String comentario;
 
-    private LocalDate dataVisita;
+    @Column(name = "data_visita") private LocalDate dataVisita;
 
-    @Column(nullable = false)
+    @Column(name = "data_avaliacao", nullable = false)
     private LocalDateTime dataCriacao;
 
     @OneToMany(mappedBy = "avaliacao", cascade = CascadeType.ALL, orphanRemoval = true)

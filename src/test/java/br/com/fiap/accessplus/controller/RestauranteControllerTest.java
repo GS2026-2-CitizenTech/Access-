@@ -1,9 +1,12 @@
 package br.com.fiap.accessplus.controller;
 
 import br.com.fiap.accessplus.bo.RestauranteBO;
+import br.com.fiap.accessplus.bo.UsuarioBO;
 import br.com.fiap.accessplus.exception.GlobalExceptionHandler;
 import br.com.fiap.accessplus.model.entity.Restaurante;
 import br.com.fiap.accessplus.repository.RestauranteRepository;
+import br.com.fiap.accessplus.model.entity.Usuario;
+import br.com.fiap.accessplus.model.entity.TipoUsuario;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -29,13 +32,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class RestauranteControllerTest {
 
     private RestauranteRepository repository;
+    private UsuarioBO usuarioBO;
     private MockMvc mockMvc;
 
     @BeforeEach
     void setup() {
         repository = mock(RestauranteRepository.class);
+        usuarioBO = mock(UsuarioBO.class);
         when(repository.save(any(Restaurante.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        RestauranteController controller = new RestauranteController(new RestauranteBO(repository));
+        RestauranteController controller = new RestauranteController(new RestauranteBO(repository, usuarioBO));
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 .setControllerAdvice(new GlobalExceptionHandler())
                 .build();
@@ -48,10 +53,12 @@ class RestauranteControllerTest {
             restaurante.setIdRestaurante(1L);
             return restaurante;
         });
+        Usuario responsavel = new Usuario(); responsavel.setTipoUsuario(TipoUsuario.RESTAURANTE);
+        when(usuarioBO.buscarPorId(10L)).thenReturn(responsavel);
 
         mockMvc.perform(post("/restaurantes")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"nome\":\"Bistrô Central\",\"bairro\":\"Centro\",\"endereco\":\"Rua das Flores, 10\",\"descricao\":\"Cozinha brasileira\"}"))
+                        .content("{\"nome\":\"Bistrô Central\",\"bairro\":\"Centro\",\"endereco\":\"Rua das Flores, 10\",\"descricao\":\"Cozinha brasileira\",\"idResponsavel\":10}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.idRestaurante").value(1))
                 .andExpect(jsonPath("$.ativo").value(true))

@@ -1,28 +1,25 @@
 package br.com.fiap.accessplus.model.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
+@Table(name = "RECURSO_ACESSIBILIDADE", uniqueConstraints = @UniqueConstraint(columnNames = {"categoria_id", "nome"}))
 public class RecursoAcessibilidade {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_recurso_acessibilidade")
+    @SequenceGenerator(name = "seq_recurso_acessibilidade", sequenceName = "SEQ_RECURSO_ACESSIBILIDADE", allocationSize = 1)
+    @Column(name = "id_recurso")
     private Long idRecurso;
 
-    @Column(nullable = false)
+    @Column(name = "nome", nullable = false)
     private String nome;
 
-    private String descricao;
+    @Column(name = "descricao") private String descricao;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private CategoriaAcessibilidade categoria;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "categoria_id", nullable = false)
+    private CategoriaAcessibilidadeEntity categoria;
 
     public RecursoAcessibilidade() {
     }
@@ -51,11 +48,20 @@ public class RecursoAcessibilidade {
         this.descricao = descricao;
     }
 
-    public CategoriaAcessibilidade getCategoria() {
+    public CategoriaAcessibilidadeEntity getCategoria() {
         return categoria;
     }
 
-    public void setCategoria(CategoriaAcessibilidade categoria) {
+    public void setCategoria(CategoriaAcessibilidadeEntity categoria) {
         this.categoria = categoria;
+    }
+    public void setCategoria(CategoriaAcessibilidade codigo) {
+        if (codigo == null) {
+            this.categoria = null;
+            return;
+        }
+        CategoriaAcessibilidadeEntity categoriaTemporaria = new CategoriaAcessibilidadeEntity();
+        categoriaTemporaria.setCodigo(codigo);
+        this.categoria = categoriaTemporaria;
     }
 }

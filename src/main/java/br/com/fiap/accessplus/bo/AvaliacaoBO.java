@@ -8,6 +8,7 @@ import br.com.fiap.accessplus.model.entity.Restaurante;
 import br.com.fiap.accessplus.model.entity.Usuario;
 import br.com.fiap.accessplus.repository.AvaliacaoRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -25,13 +26,19 @@ public class AvaliacaoBO {
     private final AvaliacaoRepository avaliacaoRepository;
     private final RestauranteBO restauranteBO;
     private final UsuarioBO usuarioBO;
+    private final CategoriaAcessibilidadeBO categoriaBO;
 
+    @Autowired
     public AvaliacaoBO(AvaliacaoRepository avaliacaoRepository,
                        RestauranteBO restauranteBO,
-                       UsuarioBO usuarioBO) {
+                       UsuarioBO usuarioBO, CategoriaAcessibilidadeBO categoriaBO) {
         this.avaliacaoRepository = avaliacaoRepository;
         this.restauranteBO = restauranteBO;
         this.usuarioBO = usuarioBO;
+        this.categoriaBO = categoriaBO;
+    }
+    public AvaliacaoBO(AvaliacaoRepository avaliacaoRepository, RestauranteBO restauranteBO, UsuarioBO usuarioBO) {
+        this(avaliacaoRepository, restauranteBO, usuarioBO, null);
     }
 
     public Avaliacao cadastrar(Long idRestaurante, Long idUsuario, Avaliacao avaliacao) {
@@ -77,13 +84,14 @@ public class AvaliacaoBO {
     private void validarNotasCategorias(List<AvaliacaoCategoria> notasCategorias) {
         Set<CategoriaAcessibilidade> categorias = new HashSet<>();
         for (AvaliacaoCategoria notaCategoria : notasCategorias) {
-            if (notaCategoria == null || notaCategoria.getCategoria() == null) {
+            if (notaCategoria == null || notaCategoria.getCodigoCategoria() == null) {
                 throw new IllegalArgumentException("Categoria de acessibilidade inválida");
             }
-            if (!categorias.add(notaCategoria.getCategoria())) {
+            if (!categorias.add(notaCategoria.getCodigoCategoria())) {
                 throw new IllegalArgumentException("Não é permitido repetir categoria na mesma avaliação");
             }
             validarNota(notaCategoria.getNota(), "Nota da categoria");
+            if (categoriaBO != null) notaCategoria.setCategoria(categoriaBO.buscarPorCodigo(notaCategoria.getCodigoCategoria()));
         }
     }
 
