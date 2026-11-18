@@ -21,16 +21,14 @@ As seguintes operações foram observadas durante a integração supervisionada:
 | `GET /restaurantes` | Inicialmente retornou quatro restaurantes públicos. |
 | `GET /recursos-acessibilidade` | Retornou cinco recursos. |
 | `GET /restaurantes/1/avaliacoes` | Retornou a avaliação do restaurante 1 com notas por categoria. |
-| `POST /usuarios` | Criou o usuário fictício de ID `100`. |
-| `POST /restaurantes` | Criou o restaurante fictício de ID `100`, vinculado ao responsável `100`. |
-| Declaração de recurso | Atualizou/criou a declaração fictícia `RESTAURANTE_RECURSO` de ID `100`, com estado `SIM`. |
-| `PATCH /restaurantes/100/publicar` | Publicou o restaurante fictício `100`. |
-| `POST /restaurantes/100/avaliacoes` | Criou a avaliação fictícia de ID `100` com duas notas por categoria. |
-| `POST /avaliacoes/100/verificacoes` | Criou a verificação fictícia de ID `100`, com resultado `CONFIRMADO`. |
+| `POST /usuarios` | Criou o usuário fictício de ID `100` com HTTP `201`. |
+| `POST /restaurantes` | Criou o restaurante fictício de ID `100`, vinculado ao responsável `100`, com HTTP `201`. |
+| PUT de declaração de recurso | Atualizou/criou a declaração fictícia `RESTAURANTE_RECURSO` de ID `100`, com estado `SIM` e HTTP `200`. |
+| `PATCH /restaurantes/100/publicar` | Publicou o restaurante fictício `100` com HTTP `200`. |
+| `POST /restaurantes/100/avaliacoes` | Criou a avaliação fictícia de ID `100` com duas notas por categoria e HTTP `201`. |
+| `POST /avaliacoes/100/verificacoes` | Criou a verificação fictícia de ID `100`, com resultado `CONFIRMADO` e HTTP `201`. |
 | `GET /avaliacoes/100/verificacoes` | Retornou HTTP `200`. |
 | `GET /verificacoes/100` | Retornou HTTP `200`. |
-
-Os códigos HTTP de criação e atualização não foram anotados nas evidências recebidas; por isso não são declarados como resultados observados neste documento.
 
 ## Sequences exercitadas
 
@@ -59,4 +57,5 @@ Os textos exatos das consultas não foram preservados nas evidências fornecidas
 - A validação real cobriu fluxos representativos, não todos os cenários possíveis, erros de concorrência ou todas as constraints do Oracle.
 - Não foram executadas operações destrutivas, DDL ou DML de recarga nesta revisão.
 - O MVP não possui autenticação/autorização; operações de escrita exigem proteção antes de uso público.
+- O backend atual utiliza identificador de usuário no cadastro de avaliações. A RN15 de `REGRAS_NEGOCIO.md` descreve inicialmente um fluxo por nome de exibição sem autenticação; a divergência é documental e o comportamento da API não foi alterado nesta etapa.
 - Registros e IDs de demonstração devem continuar sendo tratados como dados fictícios de integração.

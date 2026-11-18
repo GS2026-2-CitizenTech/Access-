@@ -49,11 +49,20 @@ O Maven Wrapper está incluído; não é necessário instalar Maven globalmente.
 
 Defina as variáveis de ambiente antes de iniciar a aplicação. Use os mesmos dados de conexão validados no SQL Developer, sem gravar credenciais no repositório.
 
+O driver Oracle aceita os dois formatos abaixo para `ORACLE_DB_URL`:
+
 ```powershell
+# Conexão por SID
+$env:ORACLE_DB_URL = "jdbc:oracle:thin:@<host>:<porta>:<sid>"
+
+# Conexão por Service Name
 $env:ORACLE_DB_URL = "jdbc:oracle:thin:@//<host>:<porta>/<service-name>"
+
 $env:ORACLE_DB_USERNAME = "<usuario-do-schema>"
 $env:ORACLE_DB_PASSWORD = "<senha-do-schema>"
 ```
+
+A validação supervisionada do projeto utilizou conexão por **SID**. Host, usuário e senha reais não são publicados neste repositório.
 
 A aplicação lê somente essas variáveis. A configuração JPA usa `spring.jpa.hibernate.ddl-auto=validate`: ela valida o schema existente e não cria nem altera tabelas automaticamente.
 
@@ -108,6 +117,7 @@ Durante integração supervisionada no Oracle 19c da FIAP, foram validadas leitu
 
 - Não há autenticação nem autorização. Endpoints de escrita e consultas administrativas de usuários não são seguros para exposição pública.
 - O identificador de usuário recebido no cadastro de avaliação não comprova identidade ou permissão.
+- O backend atual recebe o identificador de usuário no cadastro de avaliações. A RN15 de `REGRAS_NEGOCIO.md` descreve inicialmente um fluxo por nome de exibição sem autenticação; essa divergência documental permanece pendente e não altera o contrato atual da API.
 - Não há edição ou exclusão pública de avaliações e verificações.
 - Verificações comunitárias são relatos e não alteram automaticamente a declaração do restaurante.
 - Uma operação específica para transferência real de estabelecimento e histórico de localização ainda depende de definição da equipe.
