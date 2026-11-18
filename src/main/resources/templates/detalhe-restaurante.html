@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head(${restaurante.nome})}"></head>
+<body>
+<main class="app-shell page-with-nav">
+    <header class="detail-hero"><a class="back-link" th:href="@{/app/explorar}"><span aria-hidden="true">←</span> Explorar</a>
+        <div class="notice notice--success" th:if="${sucesso}" role="status" th:text="${sucesso}">Avaliação enviada com sucesso.</div>
+        <div class="restaurant-art restaurant-art--detail" aria-label="Ilustração do ambiente, não representa uma fotografia real" role="img"><span class="art-sun"></span><span class="art-window"></span><span class="art-plant"></span><span class="art-table"></span><span class="art-note">Ilustração conceitual</span></div>
+        <p class="eyebrow"><span th:text="${restaurante.bairro}">Bairro</span><span th:if="${restaurante.cidade != null}" th:text="${' · ' + restaurante.cidade}"></span></p>
+        <h1 th:text="${restaurante.nome}">Nome do restaurante</h1>
+        <p th:text="${restaurante.descricao}">Descrição</p>
+        <div class="score" th:if="${notaMedia != null}"><strong th:text="${notaMedia}">4.5</strong><span>nota média da comunidade</span></div>
+        <p class="muted" th:if="${notaMedia == null}">Ainda não há avaliações para calcular uma nota média.</p>
+        <a class="button" th:href="@{/app/restaurantes/{id}/avaliar(id=${restaurante.idRestaurante})}">Avaliar este restaurante</a>
+    </header>
+
+    <section class="section" aria-labelledby="acessibilidade-titulo"><div class="section-heading"><h2 id="acessibilidade-titulo">Acessibilidade declarada</h2><span class="disclosure-label">Autodeclarada</span></div>
+        <p class="section-copy">As informações abaixo foram declaradas pelo estabelecimento e não representam certificação técnica.</p>
+        <div class="declaration-list" th:if="${!#lists.isEmpty(declaracoes)}">
+            <div class="declaration" th:each="declaracao : ${declaracoes}"><div><h3 th:text="${declaracao.recurso.nome}">Recurso</h3><p th:if="${declaracao.recurso.descricao != null}" th:text="${declaracao.recurso.descricao}"></p></div>
+                <span th:classappend="${' status--' + #strings.toLowerCase(declaracao.statusDeclaracao.name())}" class="status" th:text="${declaracao.statusDeclaracao}">SIM</span>
+            </div>
+        </div>
+        <p class="empty-inline" th:if="${#lists.isEmpty(declaracoes)}">Este restaurante ainda não declarou recursos de acessibilidade.</p>
+    </section>
+
+    <section class="section" aria-labelledby="avaliacoes-titulo"><div class="section-heading"><h2 id="avaliacoes-titulo">Avaliações da comunidade</h2><span th:text="${#lists.size(avaliacoes) + ' relatos'}">0 relatos</span></div>
+        <div class="review-list" th:if="${!#lists.isEmpty(avaliacoes)}">
+            <article class="review-card" th:each="avaliacao : ${avaliacoes}"><div class="review-heading"><div><p class="eyebrow">Experiência compartilhada</p><h3><span th:text="${avaliacao.notaGeral}">4.5</span> / 5</h3></div><time th:if="${avaliacao.dataVisita != null}" th:text="${#temporals.format(avaliacao.dataVisita, 'dd/MM/yyyy')}">01/01/2026</time></div>
+                <p th:if="${avaliacao.comentario != null && !avaliacao.comentario.isBlank()}" th:text="${avaliacao.comentario}">Comentário</p>
+                <div class="category-score-list" th:if="${!#lists.isEmpty(avaliacao.notasCategorias)}"><span class="category-score" th:each="nota : ${avaliacao.notasCategorias}"><span th:text="${nota.codigoCategoria}">FISICA</span><strong th:text="${nota.nota}">4.0</strong></span></div>
+                <div class="verification-list" th:with="verificacoes=${verificacoesPorAvaliacao[avaliacao.idAvaliacao]}" th:if="${!#lists.isEmpty(verificacoes)}"><p class="verification-title">Observações sobre recursos</p><div class="verification" th:each="verificacao : ${verificacoes}"><span th:classappend="${' status--' + #strings.toLowerCase(verificacao.resultado.name())}" class="status" th:text="${verificacao.resultado}">CONFIRMADO</span><div><strong th:text="${verificacao.restauranteRecurso.recurso.nome}">Recurso</strong><p th:if="${verificacao.comentario != null}" th:text="${verificacao.comentario}"></p></div></div></div>
+            </article>
+        </div>
+        <div class="empty-state" th:if="${#lists.isEmpty(avaliacoes)}"><div class="empty-symbol" aria-hidden="true"></div><h3>Ainda não há relatos</h3><p>Você pode ser a primeira pessoa a compartilhar sua experiência.</p></div>
+    </section>
+</main>
+<nav th:replace="~{fragments :: bottomNav(${activeNav})}"></nav>
+</body>
+</html>

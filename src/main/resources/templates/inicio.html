@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Início')}"></head>
+<body>
+<main class="app-shell page-with-nav">
+    <header class="hero">
+        <a class="brand" th:href="@{/app}" aria-label="Access+, página inicial"><span class="brand-mark">A+</span><span>Access+</span></a>
+        <p class="eyebrow">Acessibilidade para todos</p>
+        <h1>Encontre lugares que acolhem a sua experiência.</h1>
+        <p class="hero-copy">Consulte informações compartilhadas por restaurantes e pela comunidade.</p>
+    </header>
+
+    <form class="search-box" th:action="@{/app/explorar}" method="get" role="search">
+        <label class="sr-only" for="busca-inicio">Pesquisar restaurantes</label>
+        <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/></svg>
+        <input id="busca-inicio" name="busca" type="search" placeholder="Busque por restaurante ou bairro">
+        <button type="submit">Buscar</button>
+    </form>
+
+    <section class="section" aria-labelledby="categorias-titulo">
+        <div class="section-heading"><h2 id="categorias-titulo">Explore por recurso</h2><a th:href="@{/app/explorar}">Ver todos</a></div>
+        <div class="category-scroller">
+            <a class="category-chip" th:each="recurso : ${recursos}" th:href="@{/app/explorar(recurso=${recurso.idRecurso})}">
+                <span class="category-orb" aria-hidden="true"></span>
+                <span th:text="${recurso.nome}">Rampa de acesso</span>
+            </a>
+            <p class="empty-inline" th:if="${#lists.isEmpty(recursos)}">O catálogo de recursos ainda não possui itens disponíveis.</p>
+        </div>
+    </section>
+
+    <section class="section" aria-labelledby="destaques-titulo">
+        <div class="section-heading"><h2 id="destaques-titulo">Restaurantes em destaque</h2><a th:href="@{/app/explorar}">Explorar</a></div>
+        <div class="restaurant-grid restaurant-grid--feature" th:if="${!#lists.isEmpty(restaurantes)}">
+            <article class="restaurant-card" th:each="restaurante : ${restaurantes}">
+                <div class="restaurant-art" aria-label="Ilustração do ambiente, não representa uma fotografia real" role="img"><span class="art-sun"></span><span class="art-window"></span><span class="art-plant"></span><span class="art-table"></span><span class="art-note">Ilustração</span></div>
+                <div class="card-content">
+                    <p class="location"><span th:text="${restaurante.bairro}">Bairro</span><span th:if="${restaurante.cidade != null}" th:text="${' · ' + restaurante.cidade}"></span></p>
+                    <h3 th:text="${restaurante.nome}">Nome do restaurante</h3>
+                    <div class="resource-tags" th:with="declaracoes=${recursosPorRestaurante[restaurante.idRestaurante]}">
+                        <span class="tag" th:each="declaracao : ${declaracoes}" th:text="${declaracao.recurso.nome}">Recurso</span>
+                        <span class="tag tag--muted" th:if="${#lists.isEmpty(declaracoes)}">Sem recurso declarado</span>
+                    </div>
+                    <a class="card-link" th:href="@{/app/restaurantes/{id}(id=${restaurante.idRestaurante})}">Ver detalhes <span aria-hidden="true">→</span></a>
+                </div>
+            </article>
+        </div>
+        <div class="empty-state" th:if="${#lists.isEmpty(restaurantes)}">
+            <div class="empty-symbol" aria-hidden="true"></div><h3>Nenhum restaurante público ainda</h3>
+            <p>Quando os restaurantes forem publicados, eles aparecerão aqui.</p>
+        </div>
+    </section>
+</main>
+<nav th:replace="~{fragments :: bottomNav(${activeNav})}"></nav>
+</body>
+</html>

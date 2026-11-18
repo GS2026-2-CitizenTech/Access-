@@ -1,0 +1,8 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Avaliações')}"></head>
+<body>
+<main class="app-shell page-with-nav centered-page"><a class="brand" th:href="@{/app}"><span class="brand-mark">A+</span><span>Access+</span></a><section class="orientation-card"><p class="eyebrow">Avaliações</p><h1>Relatos que ajudam na decisão.</h1><p>As avaliações e observações de recursos aparecem na página de cada restaurante público.</p><a class="button" th:href="@{/app/explorar}">Explorar restaurantes</a><p class="muted">O histórico pessoal ainda depende de autenticação e não faz parte deste MVP.</p></section></main>
+<nav th:replace="~{fragments :: bottomNav(${activeNav})}"></nav>
+</body>
+</html>

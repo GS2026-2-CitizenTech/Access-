@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Avaliar restaurante')}"></head>
+<body>
+<main class="app-shell page-with-nav">
+    <header class="page-header"><a class="back-link" th:href="@{/app/restaurantes/{id}(id=${restaurante.idRestaurante})}"><span aria-hidden="true">←</span> Voltar ao restaurante</a><p class="eyebrow">Compartilhe sua experiência</p><h1 th:text="${restaurante.nome}">Restaurante</h1><p>Seu relato ajuda outras pessoas a planejar a visita.</p></header>
+    <section class="notice" aria-labelledby="aviso-titulo"><strong id="aviso-titulo">Demonstração acadêmica local</strong><p>Selecione um perfil fictício existente para registrar o relato. Isso não é login nem autorização.</p></section>
+    <form class="review-form" th:action="@{/app/restaurantes/{id}/avaliar(id=${restaurante.idRestaurante})}" method="post" novalidate>
+        <div class="form-error" th:if="${errosFormulario}" role="alert"><p th:each="erro : ${errosFormulario}" th:text="${erro}">Erro no envio.</p></div>
+        <label for="idUsuario">Perfil de demonstração <span>Obrigatório</span></label>
+        <select id="idUsuario" name="idUsuario" aria-describedby="perfil-ajuda"><option value="">Escolha um perfil</option><option th:each="usuario : ${usuariosDemonstracao}" th:value="${usuario.idUsuario}" th:selected="${formularioAvaliacao.idUsuario != null and formularioAvaliacao.idUsuario.equals(usuario.idUsuario)}" th:text="${'Perfil de demonstração #' + usuario.idUsuario}">Perfil de demonstração</option></select>
+        <p id="perfil-ajuda" class="section-copy">São exibidos apenas perfis consumidores já cadastrados. Nenhum nome, e-mail ou senha é mostrado.</p>
+        <div th:replace="~{fragments :: rating('notaGeral', 'Nota geral', false, ${formularioAvaliacao.notaGeral})}"></div>
+        <section class="category-rating-section" aria-labelledby="notas-categoria-titulo"><h2 id="notas-categoria-titulo">Notas por categoria <span>Opcional</span></h2><div class="category-rating-list">
+            <div th:replace="~{fragments :: rating('notaFisica', 'Física', true, ${formularioAvaliacao.notaFisica})}"></div>
+            <div th:replace="~{fragments :: rating('notaVisual', 'Visual', true, ${formularioAvaliacao.notaVisual})}"></div>
+            <div th:replace="~{fragments :: rating('notaAuditiva', 'Auditiva', true, ${formularioAvaliacao.notaAuditiva})}"></div>
+            <div th:replace="~{fragments :: rating('notaSensorial', 'Sensorial', true, ${formularioAvaliacao.notaSensorial})}"></div>
+        </div></section>
+        <fieldset><legend>Verificações comunitárias <span>Opcional</span></legend><p class="section-copy">As verificações são relatos comunitários e não alteram a declaração original do restaurante. “Não registrar” não é o mesmo que “Não verificado”.</p><div class="verification-form-item" th:each="declaracao, item : ${declaracoes}" th:with="verificacao=${formularioAvaliacao.verificacoes[item.index]}"><input type="hidden" th:name="${'verificacoes[' + item.index + '].idRestauranteRecurso'}" th:value="${verificacao.idRestauranteRecurso}"><strong th:text="${declaracao.recurso.nome}">Recurso</strong><small th:text="${'Declaração atual: ' + declaracao.statusDeclaracao}">Declaração atual</small><label th:for="${'verificacao-' + item.index}">Seu relato sobre este recurso</label><select th:id="${'verificacao-' + item.index}" th:name="${'verificacoes[' + item.index + '].resultado'}"><option value="" th:selected="${verificacao.resultado == null}">Não registrar verificação</option><option value="CONFIRMADO" th:selected="${verificacao.resultado != null and verificacao.resultado.name() == 'CONFIRMADO'}">Confirmado</option><option value="CONTESTADO" th:selected="${verificacao.resultado != null and verificacao.resultado.name() == 'CONTESTADO'}">Contestado</option><option value="NAO_VERIFICADO" th:selected="${verificacao.resultado != null and verificacao.resultado.name() == 'NAO_VERIFICADO'}">Não verificado</option></select><label th:for="${'comentario-verificacao-' + item.index}">Comentário da verificação <span>Opcional</span></label><textarea th:id="${'comentario-verificacao-' + item.index}" th:name="${'verificacoes[' + item.index + '].comentario'}" th:text="${verificacao.comentario}" maxlength="500" rows="2" placeholder="Descreva apenas se registrar uma verificação."></textarea></div><p class="empty-inline" th:if="${#lists.isEmpty(declaracoes)}">Não há recursos declarados para observar.</p></fieldset>
+        <label for="comentario">Comentário <span>Opcional</span></label><textarea id="comentario" name="comentario" th:text="${formularioAvaliacao.comentario}" maxlength="500" rows="5" placeholder="Conte como foi sua experiência."></textarea>
+        <label for="data-visita">Data da visita <span>Opcional</span></label><input id="data-visita" name="dataVisita" th:value="${formularioAvaliacao.dataVisita}" type="date">
+        <button class="button" type="submit">Enviar avaliação</button>
+    </form>
+</main>
+<nav th:replace="~{fragments :: bottomNav(${activeNav})}"></nav>
+</body>
+</html>

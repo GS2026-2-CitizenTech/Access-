@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Explorar')}"></head>
+<body>
+<main class="app-shell page-with-nav">
+    <header class="page-header"><a class="brand" th:href="@{/app}"><span class="brand-mark">A+</span><span>Access+</span></a><p class="eyebrow">Explorar</p><h1>Restaurantes acessíveis</h1><p>Filtre por um recurso declarado como disponível.</p></header>
+    <form class="search-box" th:action="@{/app/explorar}" method="get" role="search">
+        <label class="sr-only" for="busca-explorar">Pesquisar restaurantes</label>
+        <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/></svg>
+        <input id="busca-explorar" name="busca" type="search" th:value="${busca}" placeholder="Nome, bairro ou cidade">
+        <button type="submit">Buscar</button>
+    </form>
+    <section class="filters" aria-label="Filtros por recurso">
+        <a th:href="@{/app/explorar(busca=${busca})}" th:classappend="${recursoSelecionado == null} ? ' is-selected' : ''" class="filter-pill">Todos</a>
+        <a th:each="item : ${recursos}" th:href="@{/app/explorar(busca=${busca},recurso=${item.idRecurso})}" th:classappend="${recursoSelecionado == item.idRecurso} ? ' is-selected' : ''" class="filter-pill" th:text="${item.nome}">Recurso</a>
+    </section>
+    <section class="section section--tight" aria-labelledby="lista-titulo"><h2 id="lista-titulo" class="sr-only">Resultados</h2>
+        <div class="restaurant-list" th:if="${!#lists.isEmpty(restaurantes)}">
+            <article class="restaurant-row" th:each="restaurante : ${restaurantes}">
+                <div class="mini-art" aria-label="Ilustração do ambiente, não representa uma fotografia real" role="img"><span></span><span></span><span></span></div>
+                <div class="row-content"><p class="location"><span th:text="${restaurante.bairro}">Bairro</span><span th:if="${restaurante.cidade != null}" th:text="${' · ' + restaurante.cidade}"></span></p>
+                    <h3 th:text="${restaurante.nome}">Nome</h3>
+                    <div class="resource-tags" th:with="declaracoes=${recursosPorRestaurante[restaurante.idRestaurante]}"><span class="tag" th:each="declaracao : ${declaracoes}" th:text="${declaracao.recurso.nome}">Recurso</span></div>
+                    <a class="card-link" th:href="@{/app/restaurantes/{id}(id=${restaurante.idRestaurante})}">Abrir informações <span aria-hidden="true">→</span></a>
+                </div>
+            </article>
+        </div>
+        <div class="empty-state" th:if="${#lists.isEmpty(restaurantes)}"><div class="empty-symbol" aria-hidden="true"></div><h3>Nenhum resultado encontrado</h3><p>Tente outra busca ou remova o filtro selecionado.</p><a class="button button--secondary" th:href="@{/app/explorar}">Limpar filtros</a></div>
+    </section>
+</main>
+<nav th:replace="~{fragments :: bottomNav(${activeNav})}"></nav>
+</body>
+</html>

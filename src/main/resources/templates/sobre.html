@@ -1,0 +1,8 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Sobre o Access+')}"></head>
+<body>
+<main class="app-shell page-with-nav centered-page"><a class="brand" th:href="@{/app}"><span class="brand-mark">A+</span><span>Access+</span></a><section class="orientation-card"><p class="eyebrow">Sobre</p><h1>Informação compartilhada, escolhas mais acessíveis.</h1><p>Access+ reúne declarações dos restaurantes, avaliações e verificações da comunidade para apoiar decisões gastronômicas mais inclusivas.</p><div class="about-points"><p><strong>Declaração</strong> Informada pelo estabelecimento.</p><p><strong>Relato</strong> Compartilhado pela comunidade.</p><p><strong>Transparência</strong> Nenhuma informação é apresentada como certificação técnica.</p></div></section></main>
+<nav th:replace="~{fragments :: bottomNav(${activeNav})}"></nav>
+</body>
+</html>
